@@ -1,0 +1,103 @@
+from sklearn import datasets, preprocessing, neighbors
+
+from sklearn.datasets import load_iris
+
+import numpy as np
+
+from sklearn.model_selection import train_test_split
+
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+import matplotlib.pyplot as plt
+
+# Load dataset
+
+iris = datasets.load_iris()
+
+print("Iris data")
+
+print(iris)
+
+print("\nIris feature names\n")
+
+print(iris.feature_names)
+
+print("\nInteger representing features (0=setosa, 1=versicolor, 2=virginica)\n");
+
+print(iris.target)
+
+print("\n3 Classes of target\n")
+
+print(iris.target_names)
+
+print("\nTotal of 150 observations and 4 features\n")
+
+print(iris.data.shape)
+
+print("\n")
+
+# Splitting dataset
+
+x, y = iris.data, iris.target
+
+x_train, x_test, y_train, y_test = train_test_split(x, y, stratify=y, random_state=0, train_size=0.7)
+
+print("Shape of train and test objects\n")
+
+print("x_train shape:", x_test.shape)
+
+print("\n")
+
+print("x_test shape:", x_test.shape)
+
+print("\n")
+
+print("y_train\n")
+
+print(y_train)
+
+print("\n")
+
+print("y_test\n")
+
+print(y_test)
+
+print("\n")
+
+print("y_train shape:", y_train.shape)
+
+print("\n")
+
+# Data standardization
+
+scaler = preprocessing.StandardScaler().fit(x_train)
+
+x_train = scaler.transform(x_train)
+
+x_test = scaler.transform(x_test)
+
+# KNN classifier
+
+scores = []
+
+k_range = range(1, 15)
+
+for k in k_range:
+
+    knn = neighbors.KNeighborsClassifier(n_neighbors=k)
+
+    knn.fit(x_train, y_train)
+
+    y_pred = knn.predict(x_test)
+
+    accuracy = accuracy_score(y_test, y_pred)
+
+    scores.append(accuracy)
+
+    print("Prediction of species:", y_pred)
+
+    print("Accuracy score:", accuracy_score(y_test, y_pred))
+
+    print("Confusion matrix:\n", confusion_matrix(y_test, y_pred))
+
+    print("Classification Report:\n", classification_report(y_test, y_pred))
