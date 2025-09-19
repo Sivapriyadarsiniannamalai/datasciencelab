@@ -1,0 +1,57 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn import preprocessing
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import train_test_split
+
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+d1= {
+    'BMI':[33.6,24.6,23.4,43.1,35.3,35.9,36.7,25.7,23.3,32],
+   'Age':[50,30,40,67,23,45,46,29,56,54],
+    'Sugar':[1,0,0,0,1,1,1,0,0,1]
+    }
+
+data1 = pd.DataFrame(d1)
+data1.to_csv("NewDataset.csv")
+print(data1)
+
+col=data1['Sugar'].map({0:'blue',1:'red'})
+plt.scatter(data1['BMI'],data1['Age'],color=col,s=100)
+plt.title('BMI is Age',fontsize=14)
+plt.xlabel('BMI',fontsize=14)
+plt.ylabel('Age',fontsize=14)
+plt.scatter([],[],color='blue',label='sugar=0')
+plt.scatter([],[],color='red',label='sugar=1')
+plt.legend(title='Sugar level')
+plt.grid(True)
+plt.show()
+
+
+x = data1[['BMI','Age']]
+y = data1['Sugar']
+
+
+scaler=preprocessing.StandardScaler().fit(x)
+x_scaled=scaler.fit_transform(x)
+
+x_train,x_test,y_train,y_test=train_test_split(x_scaled,y,test_size=0.3,stratify=y,random_state=0)
+
+knn = KNeighborsClassifier(n_neighbors=3)
+knn.fit(x_train,y_train)
+
+y_pred=knn.predict(x_test)
+
+new_data=np.array([[43.6,40]])
+new_data_scaled=scaler.transform(new_data)
+pred=knn.predict(new_data_scaled)
+print(f"The predicted class for BMI=43.6 and Age=40 is:{pred[0]}")
+if pred[0] == 0:
+    print("The person has no sugar")
+else:
+    print("The person has sugar")
+    
+Conf_matrix=confusion_matrix(y_test,y_pred)
+print("Confusion Matrix:")
+print(Conf_matrix)
