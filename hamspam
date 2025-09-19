@@ -1,0 +1,42 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import accuracy_score
+
+
+data = [
+    ['ham', 'Hello how are you?'],
+    ['ham', 'message'],
+    ['ham', 'Congratulations! You won a lottery of $1000'],
+    ['spam', "Don't forget our meeting tomorrow!"],
+    ['ham', 'Can we meet tomorrow?'],
+    ['spam', 'Click here to claim your prize!'],
+    ['ham', 'I have a good day :)']
+]
+
+
+df = pd.DataFrame(data, columns=['label', 'message'])
+X = df['message']
+y = df['label']
+
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+
+
+vectorizer = CountVectorizer()
+X_train_vectorized = vectorizer.fit_transform(X_train)
+
+
+model = MultinomialNB()
+model.fit(X_train_vectorized, y_train)
+
+
+y_pred = model.predict(vectorizer.transform(X_test))
+accuracy = accuracy_score(y_test, y_pred)
+print("Accuracy:", accuracy * 100, "%")
+
+new_message = ["You have won a free ticket to Bahamas!"]
+new_message_vectorized = vectorizer.transform(new_message)
+new_message_final = model.predict(new_message_vectorized)
+print("Predicted label for new message:", new_message_final[0])
